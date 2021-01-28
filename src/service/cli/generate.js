@@ -8,44 +8,9 @@ const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
 const MAX_OFFERS = 1000;
 
-const TITLES = [
-  `Продам книги Стивена Кинга`,
-  `Продам новую приставку Sony Playstation 5`,
-  `Продам отличную подборку фильмов на VHS`,
-  `Куплю антиквариат`,
-  `Куплю породистого кота`,
-  `Продам коллекцию журналов «Огонёк»`,
-  `Отдам в хорошие руки подшивку «Мурзилка»`,
-  `Продам советскую посуду. Почти не разбита`,
-  `Куплю детские санки`
-];
-
-const SENTENCES = [
-  `Товар в отличном состоянии.`,
-  `Пользовались бережно и только по большим праздникам.`,
-  `Продаю с болью в сердце...`,
-  `Бонусом отдам все аксессуары.`,
-  `Даю недельную гарантию.`,
-  `Если товар не понравится — верну всё до последней копейки.`,
-  `Это настоящая находка для коллекционера!`,
-  `Если найдёте дешевле — сброшу цену.`,
-  `Таких предложений больше нет!`,
-  `При покупке с меня бесплатная доставка в черте города.`,
-  `Две страницы заляпаны свежим кофе`,
-  `Кажется, что это хрупкая вещь`,
-  `Мой дед не мог её сломать`,
-  `Кому нужен этот новый телефон, если тут такое...`,
-  `Не пытайтесь торговаться. Цену вещам я знаю`
-];
-
-const CATEGORIES = [
-  `Книги`,
-  `Разное`,
-  `Посуда`,
-  `Игры`,
-  `Животные`,
-  `Журналы`,
-];
+const FILE_PATH_TITLES = `./data/titles.txt`;
+const FILE_PATH_SENTENCES = `./data/sentences.txt`;
+const FILE_PATH_CATEGORIES = `./data/categories.txt`;
 
 const CategoriesRestrict = {
   MIN: 1,
@@ -67,10 +32,21 @@ const PictureRestrict = {
   MAX: 16
 };
 
-const getCategories = (num) => {
+const readFileFromDisk = async (path) => {
+  try {
+    const content = (await fs.readFile(path, `utf8`)).split(`\n`);
+    content.pop();
+    return content;
+  } catch (err) {
+    console.error(chalk.red(`Произошла ошибка чтения файла: ${err}`));
+  }
+  return [];
+};
+
+const getCategories = (num, categories) => {
   let categoryArray = [];
   for (let i = 0; i <= num; i++) {
-    const randomCategory = CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)];
+    const randomCategory = categories[getRandomInt(0, categories.length - 1)];
     if (categoryArray.includes(randomCategory)) {
       continue;
     }
@@ -83,13 +59,13 @@ const getPictureFileName = (num) => {
   return `item${num}.jpg`;
 };
 
-const generateOffers = (count) => {
+const generateOffers = (count, titles, categories, sentences) => {
   return (
     Array(count).fill({}).map(() => ({
-      category: getCategories(getRandomInt(CategoriesRestrict.MIN, CategoriesRestrict.MAX)),
-      description: shuffle(SENTENCES).slice(1, 5).join(` `),
+      category: getCategories(getRandomInt(CategoriesRestrict.MIN, CategoriesRestrict.MAX), categories),
+      description: shuffle(sentences).slice(1, 5).join(` `),
       picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
-      title: TITLES[getRandomInt(0, TITLES.length - 1)],
+      title: titles[getRandomInt(0, titles.length - 1)],
       type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
       sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
     }))
@@ -107,18 +83,22 @@ module.exports = {
       return;
     }
 
-    if (countOffer < 0) {
+    if (countOffer <= 0) {
       console.error(chalk.red(`Отрицательные значения не допустимы`));
       return;
     }
 
-    const content = JSON.stringify(generateOffers(countOffer));
+    const titles = await readFileFromDisk(FILE_PATH_TITLES);
+    const categories = await readFileFromDisk(FILE_PATH_CATEGORIES);
+    const sentences = await readFileFromDisk(FILE_PATH_SENTENCES);
+
+    const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences));
 
     try {
       await fs.writeFile(FILE_NAME, content);
       console.info(chalk.green(`Operation success. File created`));
     } catch (err) {
-      console.error(chalk.red(`Can't write data to file...`));
+      console.error(chalk.red(`Can't write data to file...Because: ${err}`));
     }
   }
 };
