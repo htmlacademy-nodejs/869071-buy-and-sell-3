@@ -103,7 +103,12 @@ module.exports = {
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
     if (countOffer > MAX_OFFERS) {
-      console.log(chalk.red(`Не больше 1000 объявлений`));
+      console.error(chalk.red(`Не больше 1000 объявлений`));
+      return;
+    }
+
+    if (countOffer < 0) {
+      console.error(chalk.red(`Отрицательные значения не допустимы`));
       return;
     }
 
