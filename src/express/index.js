@@ -21,14 +21,10 @@ app.use(`/my`, myRoutes);
 app.use(`/`, mainRoutes);
 
 // Запуск сервера
-const startServer = async () => {
-  try {
-    app.listen(DEFAULT_PORT);
-    console.log(chalk.green(`Запустил сервер на порту: ${DEFAULT_PORT}`));
-  } catch (err) {
-    console.log(chalk.red(err));
+app.listen(DEFAULT_PORT, (err) => {
+  if (err) {
+    return console.error(chalk.red(`Ошибка при создании сервера`, err));
   }
-};
-
-startServer();
+  return console.info(chalk.green(`Ожидаю соединений на порту: ${DEFAULT_PORT}`));
+});
 
