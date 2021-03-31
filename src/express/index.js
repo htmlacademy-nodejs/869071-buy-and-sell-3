@@ -1,7 +1,11 @@
 'use strict';
 
+const PUBLIC_DIR = `public`;
+const TEMPLATES_RID = `templates`;
+
 const express = require(`express`);
 const chalk = require(`chalk`);
+const path = require(`path`);
 
 // Маршруты приложения мы опишем в отдельных файлах.
 // Для определения маршрутов мы воспользуемся Router().
@@ -19,6 +23,13 @@ const app = express();
 app.use(`/offers`, offersRoutes);
 app.use(`/my`, myRoutes);
 app.use(`/`, mainRoutes);
+
+// Подключаем статичные маршруты
+app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
+
+// Подключаем движок шаблонизатор и папку с его шаблонами
+app.set(`views`, path.resolve(__dirname, TEMPLATES_RID));
+app.set(`view engine`, `pug`);
 
 // Запуск сервера
 app.listen(DEFAULT_PORT, (err) => {
