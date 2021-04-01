@@ -1,11 +1,10 @@
 'use strict';
 
-const PUBLIC_DIR = `public`;
-const TEMPLATES_RID = `templates`;
-
 const express = require(`express`);
 const chalk = require(`chalk`);
 const path = require(`path`);
+
+const {HttpCode, PUBLIC_DIR, TEMPLATES_RID} = require(`./constants`);
 
 // Маршруты приложения мы опишем в отдельных файлах.
 // Для определения маршрутов мы воспользуемся Router().
@@ -26,6 +25,10 @@ app.use(`/`, mainRoutes);
 
 // Подключаем статичные маршруты
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
+
+// Делаем обработку ошибок
+app.use((req, res) => res.status(HttpCode.NOT_FOUND).render(`400`));
+app.use((req, res) => res.status(HttpCode.INTERNAL_SERVER_ERROR).render(`500`));
 
 // Подключаем движок шаблонизатор и папку с его шаблонами
 app.set(`views`, path.resolve(__dirname, TEMPLATES_RID));

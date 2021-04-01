@@ -12,7 +12,5 @@ mainRoutes.get(`/sign-up`, (req, res) => res.render(`sign-up`));
 mainRoutes.get(`/login`, (req, res) => res.render(`login`));
 mainRoutes.get(`/search`, (req, res) => res.render(`search-result`));
 mainRoutes.get(`/comments`, (req, res) => res.render(`comments`));
-mainRoutes.get(`/404`, (req, res) => res.render(`400`));
-mainRoutes.get(`/5**`, (req, res) => res.render(`500`));
 
 module.exports = mainRoutes;
