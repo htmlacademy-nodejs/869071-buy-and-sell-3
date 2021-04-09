@@ -8,7 +8,8 @@
     "test": "npm run eslint",
     "eslint": "eslint --ext .js src/",
     "server": "nodemon ./src/service/service.js --server",
-    "start-front-server": "nodemon ./src/express/index.js"
+    "start-front-server": "nodemon ./src/express/index.js",
+    "start-mock": "node ./src/service/service.js --generate"
   },
   "repository": {
     "type": "git",
